@@ -1,0 +1,48 @@
+name: Build Audio Plugin
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Install CMake
+      uses: lukka/get-cmake@latest
+
+    - name: Configure
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      run: |
+        cmake --build build --config Release
+
+    - name: Package
+      run: |
+        mkdir artifacts
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          cp build/Release/Replikator.vst3 artifacts/
+          cp build/Release/ReplikatorSetup.exe artifacts/
+        else
+          cp -r build/Release/Replikator.vst3 artifacts/
+          cp -r build/Release/Replikator.component artifacts/
+        fi
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: replikator-${{ matrix.os }}
+        path: artifacts/
