@@ -15,12 +15,18 @@ jobs:
         os: [windows-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
     - name: Install CMake
       uses: lukka/get-cmake@latest
+
+    - name: Setup JUCE
+      run: |
+        git clone --depth 1 --branch 7.0.7 https://github.com/juce-framework/JUCE.git
+        cmake -B JUCE/build -SJUCE
+        cmake --build JUCE/build --parallel
 
     - name: Configure
       run: |
@@ -28,21 +34,23 @@ jobs:
 
     - name: Build
       run: |
-        cmake --build build --config Release
+        cmake --build build --config Release --parallel
 
     - name: Package
+      shell: bash
       run: |
         mkdir artifacts
-        if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          cp build/Release/Replikator.vst3 artifacts/
-          cp build/Release/ReplikatorSetup.exe artifacts/
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          cp "build/Replikator_artefacts/Release/VST3/Replikator.vst3" artifacts/
+          cp "build/Replikator_artefacts/Release/Installer/ReplikatorSetup.exe" artifacts/
         else
-          cp -r build/Release/Replikator.vst3 artifacts/
-          cp -r build/Release/Replikator.component artifacts/
+          cp -r "build/Replikator_artefacts/Release/VST3/Replikator.vst3" artifacts/
+          cp -r "build/Replikator_artefacts/Release/AU/Replikator.component" artifacts/
         fi
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: replikator-${{ matrix.os }}
         path: artifacts/
+        retention-days: 90
