@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   build:
     name: Build on ${{ matrix.os }}
@@ -22,27 +26,20 @@ jobs:
             cmake_generator: "Xcode"
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
       with:
-        submodules: recursive
+        submodules: false
         fetch-depth: 1
 
     - name: Install CMake
       uses: lukka/get-cmake@latest
 
-    - name: Cache JUCE
-      id: cache-juce
-      uses: actions/cache@v4
-      with:
-        path: JUCE
-        key: ${{ runner.os }}-juce-7.0.7
-
-    - name: Setup JUCE
-      if: steps.cache-juce.outputs.cache-hit != 'true'
+    - name: Clone JUCE
       run: |
         git clone --depth 1 --branch 7.0.7 https://github.com/juce-framework/JUCE.git
 
-    - name: Configure
+    - name: Configure CMake
       shell: bash
       run: |
         cmake -B build \
