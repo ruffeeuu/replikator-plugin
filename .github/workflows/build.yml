@@ -54,12 +54,6 @@ jobs:
       run: |
         cmake --build build --config Release --parallel
 
-    - name: Create Installer (Windows)
-      if: matrix.os == 'windows-latest'
-      shell: pwsh
-      run: |
-        iscc "plugin/installer/windows/installer.iss"
-
     - name: Create Package (macOS)
       if: matrix.os == 'macos-latest'
       run: |
@@ -69,8 +63,14 @@ jobs:
                  --install-location "/Library/Audio/Plug-Ins" \
                  --version "1.0.0" \
                  --identifier "com.audiotools.replikator" \
-                 --min-os-version "10.6" \
+                 --min-os-version "10.13" \
                  "Replikator.pkg"
+
+    - name: Create Installer (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        iscc "plugin/installer/windows/installer.iss"
 
     - name: Package Artifacts
       shell: bash

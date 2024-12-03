@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.15)
 project(Replikator VERSION 1.0.0)
 
-# Set deployment target for macOS Snow Leopard compatibility
+# Set deployment target for macOS
 if(APPLE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.6" CACHE STRING "Minimum OS X deployment version" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Minimum OS X deployment version" FORCE)
     set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE STRING "Build architectures for OSX" FORCE)
 endif()
 
 # Add JUCE as a subdirectory
 add_subdirectory(JUCE)
 
-# Create the plugin
+# Configure JUCE
 juce_add_plugin(Replikator
     VERSION "1.0.0"
     COMPANY_NAME "AudioTools"
@@ -38,16 +38,11 @@ target_sources(Replikator
 # Setup target
 target_compile_features(Replikator PRIVATE cxx_std_14)
 
-# Set compiler flags for older system compatibility
-if(APPLE)
-    target_compile_options(Replikator PRIVATE
-        -mmacosx-version-min=10.6
-        -stdlib=libc++
-    )
-    set_target_properties(Replikator PROPERTIES
-        LINK_FLAGS "-mmacosx-version-min=10.6 -stdlib=libc++"
-    )
-endif()
+# Configure include directories
+target_include_directories(Replikator
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/plugin/src
+)
 
 # Link JUCE modules
 target_link_libraries(Replikator
