@@ -11,6 +11,7 @@ jobs:
     name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, macos-latest]
         include:
@@ -71,6 +72,7 @@ jobs:
                  --install-location "/Library/Audio/Plug-Ins" \
                  --version "1.0.0" \
                  --identifier "com.audiotools.replikator" \
+                 --min-os-version "10.6" \
                  "Replikator.pkg"
 
     - name: Package Artifacts
@@ -79,7 +81,6 @@ jobs:
         mkdir -p artifacts
         if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
           cp -r "build/Replikator_artefacts/Release/VST3/Replikator.vst3" artifacts/
-          cp -r "build/Replikator_artefacts/Release/AAX/Replikator.aaxplugin" artifacts/
           cp "plugin/installer/windows/Output/ReplikatorSetup.exe" artifacts/
         else
           cp -r "build/Replikator_artefacts/Release/VST3/Replikator.vst3" artifacts/

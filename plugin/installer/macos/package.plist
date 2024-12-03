@@ -15,6 +15,12 @@
     <key>CFBundleSignature</key>
     <string>RepK</string>
     <key>LSMinimumSystemVersion</key>
-    <string>10.11.0</string>
+    <string>10.6.0</string>
+    <key>BuildMachineOSBuild</key>
+    <string>10K549</string>
+    <key>LSArchitecturePriority</key>
+    <array>
+        <string>x86_64</string>
+    </array>
 </dict>
 </plist>
