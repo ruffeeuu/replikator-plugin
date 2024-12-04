@@ -6,9 +6,7 @@ ReplikatorAudioProcessorEditor::ReplikatorAudioProcessorEditor(ReplikatorAudioPr
     setSize(400, 300);
 }
 
-ReplikatorAudioProcessorEditor::~ReplikatorAudioProcessorEditor()
-{
-}
+ReplikatorAudioProcessorEditor::~ReplikatorAudioProcessorEditor() = default;
 
 void ReplikatorAudioProcessorEditor::paint(juce::Graphics& g)
 {
@@ -17,4 +15,5 @@ void ReplikatorAudioProcessorEditor::paint(juce::Graphics& g)
 
 void ReplikatorAudioProcessorEditor::resized()
 {
+    // Layout code will be added later
 }

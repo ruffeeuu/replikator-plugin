@@ -3,25 +3,18 @@ build/
 artifacts/
 
 # IDE files
+.vs/
 .vscode/
-.idea/
-*.suo
 *.user
+*.suo
 *.sdf
 *.opensdf
+*.xcworkspace
+*.xcuserstate
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Dependencies
-JUCE/
-
-# Compiled plugins
-*.vst3
-*.component
-*.pkg
-*.exe
-
-# Installer output
-plugin/installer/windows/Output/
+# JUCE
+JuceLibraryCode/
