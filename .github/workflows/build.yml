@@ -1,4 +1,4 @@
-name: Build Audio Plugin
+name: Build Replikator Suite
 
 on:
   push:
@@ -39,6 +39,13 @@ jobs:
       run: |
         git clone --depth 1 --branch 7.0.7 https://github.com/juce-framework/JUCE.git
 
+    - name: Download AAX SDK
+      run: |
+        mkdir -p SDKs
+        # Note: You'll need to provide access to the AAX SDK
+        # This is a placeholder as the AAX SDK requires a license from Avid
+        echo "AAX SDK needs to be obtained from Avid Developer portal"
+
     - name: Configure CMake
       shell: bash
       run: |
@@ -59,10 +66,14 @@ jobs:
       run: |
         mkdir -p artifacts
         if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-          cp -r "build/Replikator_artefacts/Release/VST3" artifacts/
+          cp -r "build/ReplikatorLoader_artefacts/Release/VST3" artifacts/
+          cp -r "build/ReplikatorLoader_artefacts/Release/AAX" artifacts/
+          cp -r "build/ReplikatorAnalysis_artefacts/Release/ReplikatorAnalysis.exe" artifacts/
         else
-          cp -r "build/Replikator_artefacts/Release/VST3" artifacts/
-          cp -r "build/Replikator_artefacts/Release/AU" artifacts/
+          cp -r "build/ReplikatorLoader_artefacts/Release/VST3" artifacts/
+          cp -r "build/ReplikatorLoader_artefacts/Release/AU" artifacts/
+          cp -r "build/ReplikatorLoader_artefacts/Release/AAX" artifacts/
+          cp -r "build/ReplikatorAnalysis_artefacts/Release/ReplikatorAnalysis.app" artifacts/
         fi
 
     - name: Upload Artifacts

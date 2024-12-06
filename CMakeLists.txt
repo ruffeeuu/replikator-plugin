@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Replikator VERSION 1.0.0)
+project(ReplikatorSuite VERSION 1.0.0)
 
 # Set deployment target for macOS
 if(APPLE)
@@ -10,43 +10,47 @@ endif()
 # Add JUCE as a subdirectory
 add_subdirectory(JUCE)
 
-# Configure JUCE
-juce_add_plugin(Replikator
+# Set AAX SDK path
+if(DEFINED ENV{AAX_SDK_PATH})
+    set(AAX_SDK_PATH $ENV{AAX_SDK_PATH})
+else()
+    set(AAX_SDK_PATH "${CMAKE_SOURCE_DIR}/SDKs/AAX_SDK")
+endif()
+
+# Configure Replikator Loader Plugin
+juce_add_plugin(ReplikatorLoader
     VERSION "1.0.0"
-    COMPANY_NAME "AudioTools"
+    COMPANY_NAME "Audio Alcazar"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     COPY_PLUGIN_AFTER_BUILD TRUE
-    PLUGIN_MANUFACTURER_CODE "AtRp"
-    PLUGIN_CODE "RepK"
-    FORMATS VST3 AU Standalone
-    PRODUCT_NAME "Replikator"
+    PLUGIN_MANUFACTURER_CODE "AuAl"
+    PLUGIN_CODE "RpLd"
+    FORMATS VST3 AU AAX Standalone
+    AAX_IDENTIFIER "com.audioalcazar.replikatorloader"
+    AAX_CATEGORY "AAX_ePlugInCategory_Effect"
+    PRODUCT_NAME "Replikator Loader"
 )
 
-# Add source files
-target_sources(Replikator
+target_sources(ReplikatorLoader
     PRIVATE
-        plugin/src/PluginProcessor.cpp
-        plugin/src/PluginEditor.cpp
-        plugin/src/audio/AudioEngine.cpp
-        plugin/src/audio/ProfileLoader.cpp
+        src/loader/PluginProcessor.cpp
+        src/loader/PluginEditor.cpp
+        src/loader/AudioEngine.cpp
+        src/loader/ProfileLoader.cpp
 )
 
-# Setup target
-target_compile_features(Replikator PRIVATE cxx_std_14)
-
-# Configure include directories
-target_include_directories(Replikator
+target_include_directories(ReplikatorLoader
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/plugin/src
+        ${CMAKE_SOURCE_DIR}/src/loader
         ${CMAKE_SOURCE_DIR}/JUCE/modules
+        ${AAX_SDK_PATH}
 )
 
-# Link JUCE modules
-target_link_libraries(Replikator
+target_link_libraries(ReplikatorLoader
     PRIVATE
         juce::juce_audio_utils
         juce::juce_audio_processors
@@ -60,8 +64,38 @@ target_link_libraries(Replikator
         juce::juce_recommended_warning_flags
 )
 
-# Disable VST2 support
-target_compile_definitions(Replikator
+# Configure Replikator Analysis Application
+juce_add_gui_app(ReplikatorAnalysis
+    VERSION "1.0.0"
+    COMPANY_NAME "Audio Alcazar"
+    PRODUCT_NAME "Replikator Analysis"
+)
+
+target_sources(ReplikatorAnalysis
     PRIVATE
-        JUCE_VST3_CAN_REPLACE_VST2=0
+        src/analysis/Main.cpp
+        src/analysis/MainComponent.cpp
+        src/analysis/AudioAnalyzer.cpp
+        src/analysis/WaveformDisplay.cpp
+        src/analysis/AnalysisEngine.cpp
+)
+
+target_include_directories(ReplikatorAnalysis
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/analysis
+        ${CMAKE_SOURCE_DIR}/JUCE/modules
+)
+
+target_link_libraries(ReplikatorAnalysis
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_audio_processors
+        juce::juce_core
+        juce::juce_data_structures
+        juce::juce_graphics
+        juce::juce_gui_basics
+    PUBLIC
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags
 )
